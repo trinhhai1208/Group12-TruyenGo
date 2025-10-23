@@ -1,0 +1,20 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Ảnh nền -->
+    <item>
+        <inset android:insetLeft="-35dp">
+        <bitmap
+            android:src="@drawable/bg_auth"
+            android:gravity="fill"
+            />
+        </inset>
+    </item>
+
+    <!-- Lớp phủ màu (đen mờ 40%) -->
+    <item>
+        <shape>
+            <solid android:color="@color/bgColor" /> <!-- #66 = 40% opacity -->
+        </shape>
+    </item>
+
+</layer-list>
