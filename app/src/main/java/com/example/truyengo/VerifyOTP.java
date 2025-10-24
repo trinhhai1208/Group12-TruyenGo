@@ -16,7 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class VerifyOTP extends AppCompatActivity {
     private EditText otp1, otp2, otp3, otp4;
-    private Button btnContinue;
+    private TextView btnContinue;
     private TextView resendText, timerText;
     private CountDownTimer countDownTimer;
     private boolean isCounting = false;
@@ -41,8 +41,9 @@ public class VerifyOTP extends AppCompatActivity {
         setupOTPInput(otp3, otp4, otp2);
         setupOTPInput(otp4, null, otp3);
 
-        // Disable button ban đầu
-        btnContinue.setEnabled(false);
+        // Disable TextView ban đầu
+        btnContinue.setClickable(false);
+        btnContinue.setAlpha(0.5f);
 
         // Bắt đầu đếm ngược
         startCountDown();
@@ -98,11 +99,13 @@ public class VerifyOTP extends AppCompatActivity {
                 + otp4.getText().toString().trim();
 
         if (otpCode.length() == 4) {
-            btnContinue.setEnabled(true);
-            btnContinue.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light)); // #A4C18B
-            btnContinue.setBackgroundTintList(getResources().getColorStateList(android.R.color.holo_green_light));
+            btnContinue.setClickable(true);
+            btnContinue.setAlpha(1f);
+            btnContinue.setBackgroundResource(R.drawable.btn_continue_active); // drawable màu xanh khi enable
+            btnContinue.setTextColor(getResources().getColor(android.R.color.white));
         } else {
-            btnContinue.setEnabled(false);
+            btnContinue.setClickable(false);
+            btnContinue.setAlpha(0.5f);
             btnContinue.setBackgroundResource(R.drawable.btn_continue); // màu xám mặc định
         }
     }
