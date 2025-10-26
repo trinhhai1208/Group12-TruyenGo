@@ -12,9 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TruyenGo">
         <activity
-            android:name=".VerifyOTP"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
