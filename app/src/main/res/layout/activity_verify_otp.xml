@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_auth_with_overlay"
+    android:paddingTop="@dimen/paddingY"
+    android:paddingBottom="@dimen/paddingY"
+    android:paddingLeft="@dimen/paddingX"
+    android:paddingRight="@dimen/paddingX"
+    tools:context=".VerifyOTP">
+
+    <Button
+        android:layout_width="@dimen/widthBtnBack"
+        android:layout_height="@dimen/widthBtnBack"
+        android:background="@drawable/back_icon"
+        android:backgroundTint="@color/white"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_white_rounded"
+        android:layout_gravity="center"
+        android:padding="24dp"
+        android:layout_marginTop="100dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nhập mã xác nhận"
+            android:gravity="center"
+            android:textColor="#1F2024"
+            android:textSize="20sp"
+            android:layout_marginBottom="24dp"
+            android:textStyle="bold"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#71727A"
+                android:text="Một mã xác nhận đã được gửi đến"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#71727A"
+                android:text="vietdoanh@gmail.com"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"
+            >
+            <EditText
+                android:id="@+id/otp1"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/otp_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="14sp"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/otp2"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/otp_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="14sp"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/otp3"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/otp_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="14sp"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/otp4"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="6dp"
+                android:background="@drawable/otp_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="14sp"
+                android:importantForAutofill="no" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#71727A"
+                android:textSize="14sp"
+                android:text="Thời gian hiệu lực:"
+                />
+            <TextView
+                android:id="@+id/textTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#71727A"
+                android:textSize="14sp"
+                android:text="56s"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textResend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#9ECA77"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp"
+            android:text="Gửi lại mã xác nhận"/>
+
+<!--        <Button-->
+<!--            android:id="@+id/btnContinue"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Tiếp tục"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            android:background="@drawable/btn_continue"-->
+<!--            style="?attr/materialButtonOutlinedStyle"-->
+<!--            android:layout_marginHorizontal="20dp"/>-->
+        <TextView
+            android:id="@+id/btnContinue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tiếp tục"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:background="@drawable/btn_continue"
+            android:paddingVertical="12dp"
+            android:layout_marginHorizontal="20dp"
+            android:clickable="true"
+            android:focusable="true"/>
+
+    </LinearLayout>
+</LinearLayout>
