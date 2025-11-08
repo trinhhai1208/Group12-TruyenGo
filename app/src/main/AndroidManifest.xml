@@ -12,10 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TruyenGo">
 <!--        <activity-->
-<!--            android:name=".AccountActivity"-->
-<!--            android:exported="false" />-->
+<!--            android:name=".BookDetail"-->
+<!--            android:encodingxported="false" />-->
+        <!-- <activity -->
+        <!-- android:name=".AccountActivity" -->
+        <!-- android:exported="false" /> -->
         <activity
-            android:name=".AccountActivity"
+            android:name=".BookDetail"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
