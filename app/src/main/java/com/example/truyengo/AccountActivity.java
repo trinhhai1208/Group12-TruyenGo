@@ -1,10 +1,11 @@
 package com.example.truyengo;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,19 +36,29 @@ public class AccountActivity extends AppCompatActivity {
         // Gán tên người dùng (có thể load từ SharedPreferences)
         tvUsername.setText("Viết Doanh");
 
-        // Xử lý nút “Xóa tài khoản”
-        btnDeleteAccount.setOnClickListener(v -> {
-            Toast.makeText(this, "Xóa tài khoản", Toast.LENGTH_SHORT).show();
-            // Thực hiện API hoặc xác nhận xóa
-        });
 
-        // Xử lý nút “Đăng xuất”
-        btnLogout.setOnClickListener(v -> {
-            Toast.makeText(this, "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
-            // Ví dụ: quay lại màn hình đăng nhập
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        });
+        btnLogout = findViewById(R.id.btnLogout);
+        btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
+
+        // Sự kiện nút "Đăng xuất"
+        btnLogout.setOnClickListener(v -> showLogoutDialog());
+
+        // Sự kiện nút "Xóa tài khoản"
+        btnDeleteAccount.setOnClickListener(v -> showDeleteAccountDialog());
+
+
+        findViewById(R.id.itemAccountManagement).setOnClickListener(v ->
+                startActivity(new Intent(this, AccountManagementActivity.class)));
+
+        findViewById(R.id.itemChangePassword).setOnClickListener(v ->
+                startActivity(new Intent(this, ChangePasswordActivity.class)));
+
+        findViewById(R.id.itemForgotPassword).setOnClickListener(v ->
+                startActivity(new Intent(this, ForgotPasswordActivity.class)));
+
+        findViewById(R.id.itemAboutApp).setOnClickListener(v ->
+                startActivity(new Intent(this, AppInfoActivity.class)));
+
 
         // Thanh điều hướng dưới
 //        bottomNavigationView.setSelectedItemId(R.id.menu_account);
@@ -80,5 +91,43 @@ public class AccountActivity extends AppCompatActivity {
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
         btnLogout = findViewById(R.id.btnLogout);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
+    }
+
+    private void showLogoutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_logout, null);
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+
+        TextView btnCancel = view.findViewById(R.id.btnCancelLogout);
+        TextView btnConfirm = view.findViewById(R.id.btnConfirmLogout);
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            dialog.dismiss();
+            // TODO: Xử lý đăng xuất (xóa token, chuyển màn hình Login, ...)
+        });
+
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.show();
+    }
+
+    private void showDeleteAccountDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_delete_account, null);
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+
+        TextView btnCancel = view.findViewById(R.id.btnCancelDelete);
+        TextView btnConfirm = view.findViewById(R.id.btnConfirmDelete);
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            dialog.dismiss();
+            // TODO: Xử lý xóa tài khoản (gọi API xóa, xóa local data, ...)
+        });
+
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.show();
     }
 }
