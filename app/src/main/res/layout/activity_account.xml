@@ -60,9 +60,9 @@
         <!-- Mỗi item -->
         <LinearLayout
             style="@style/AccountItemContainer"
-            android:id="@+id/itemAccountInfo">
+            android:id="@+id/itemAccountManagement">
             <TextView
-                android:text="Thông tin tài khoản"
+                android:text="Quản lý tài khoản"
                 style="@style/AccountItemText" />
             <ImageView
                 android:src="@drawable/ic_arrow_right"
