@@ -39,4 +39,13 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(libs.bson)
+    implementation(libs.lombok)
+    implementation(libs.jakarta.mail.api)
+    implementation(libs.gson)
+    implementation(libs.mongodb.driver.sync)
+    implementation(libs.jbcrypt)
+    implementation(libs.okhttp.v4100)
+    implementation(libs.json)
+
 }

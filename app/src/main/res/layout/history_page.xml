@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAF4ED"
-    tools:context=".HistoryActivity">
+    tools:context=".ui.library.HistoryActivity">
 
     <!-- Nội dung chính -->
     <ScrollView
