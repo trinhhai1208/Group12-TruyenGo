@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:background="@drawable/bg_auth_with_overlay"
     android:padding="16dp"
-    tools:context=".AccountActivity">
+    tools:context=".ui.account.AccountActivity">
     <!-- Header -->
     <TextView
         android:id="@+id/tvTitle"
