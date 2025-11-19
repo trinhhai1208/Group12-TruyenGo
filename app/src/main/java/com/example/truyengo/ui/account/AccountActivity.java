@@ -27,7 +27,7 @@ public class AccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_account);
+        setContentView(R.layout.account_account_activity);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -98,7 +98,7 @@ public class AccountActivity extends AppCompatActivity {
 
     private void showLogoutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_logout, null);
+        View view = LayoutInflater.from(this).inflate(R.layout.common_dialog_logout_activity, null);
         builder.setView(view);
         AlertDialog dialog = builder.create();
 
@@ -117,7 +117,7 @@ public class AccountActivity extends AppCompatActivity {
 
     private void showDeleteAccountDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_delete_account, null);
+        View view = LayoutInflater.from(this).inflate(R.layout.common_dialog_delete_account_activity, null);
         builder.setView(view);
         AlertDialog dialog = builder.create();
 

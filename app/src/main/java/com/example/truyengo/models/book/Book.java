@@ -2,15 +2,10 @@ package com.example.truyengo.models.book;
 
 import com.example.truyengo.api.chapter.ApiListChapterData;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bson.types.ObjectId;
 
 import java.util.List;
 
-@Getter
-@Setter
 public class Book {
     private ObjectId id;
     private String name;
@@ -62,6 +57,86 @@ public class Book {
         this.updatedAt = updatedAt;
         this.thumbnail = thumbnail;
         this.category = category;
+        this.chapters = chapters;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public List<BookCategory> getCategory() {
+        return category;
+    }
+
+    public void setCategory(List<BookCategory> category) {
+        this.category = category;
+    }
+
+    public List<BookChapterLastest> getChapterLastests() {
+        return chapterLastests;
+    }
+
+    public void setChapterLastests(List<BookChapterLastest> chapterLastests) {
+        this.chapterLastests = chapterLastests;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public List<ApiListChapterData> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<ApiListChapterData> chapters) {
         this.chapters = chapters;
     }
 }

@@ -17,7 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.truyengo.R;
 
-public class BookDetail extends AppCompatActivity {
+public class BookDetailActivity extends AppCompatActivity {
     ImageView btnBack, btnFavorite;
     TextView btnContinue;
     private TextView tabOverview, tabChapter;
@@ -38,7 +38,7 @@ public class BookDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_book_detail);
+        setContentView(R.layout.book_book_detail_activity);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

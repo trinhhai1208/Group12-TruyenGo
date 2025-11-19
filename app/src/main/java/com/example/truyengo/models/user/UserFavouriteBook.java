@@ -1,14 +1,9 @@
 package com.example.truyengo.models.user;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bson.types.ObjectId;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 public class UserFavouriteBook {
     private ObjectId userId;
     private ObjectId bookId;
@@ -27,5 +22,37 @@ public class UserFavouriteBook {
 
     public boolean getFavourite() {
         return favourite;
+    }
+
+    public ObjectId getUserId() {
+        return userId;
+    }
+
+    public void setUserId(ObjectId userId) {
+        this.userId = userId;
+    }
+
+    public ObjectId getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(ObjectId bookId) {
+        this.bookId = bookId;
+    }
+
+    public boolean isFavourite() {
+        return favourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
+    }
+
+    public LocalDateTime getLastAddFavDate() {
+        return lastAddFavDate;
+    }
+
+    public void setLastAddFavDate(LocalDateTime lastAddFavDate) {
+        this.lastAddFavDate = lastAddFavDate;
     }
 }

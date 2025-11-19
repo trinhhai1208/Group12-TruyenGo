@@ -20,7 +20,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_password); // tên XML bạn dùng
+        setContentView(R.layout.account_change_password_activity); // tên XML bạn dùng
 
         // Ánh xạ view
         btnBack = findViewById(R.id.btnBack);

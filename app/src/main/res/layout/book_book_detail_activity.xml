@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAF4ED"
-    tools:context=".ui.book.BookDetail">
+    tools:context=".ui.book.BookDetailActivity">
 
     <!-- Nội dung chính -->
     <ScrollView

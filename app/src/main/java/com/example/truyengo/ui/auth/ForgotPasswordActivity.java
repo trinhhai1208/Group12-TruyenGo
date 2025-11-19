@@ -20,7 +20,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forgot_password); // tên XML bạn dùng
+        setContentView(R.layout.auth_forgot_password_activity); // tên XML bạn dùng
 
         // Ánh xạ view
         btnBack = findViewById(R.id.btnBack);

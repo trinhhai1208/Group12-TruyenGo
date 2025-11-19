@@ -33,7 +33,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_page);
+        setContentView(R.layout.search_search_activity);
 
         // 1. Ánh xạ View
         etName = findViewById(R.id.etName);
@@ -68,12 +68,12 @@ public class SearchActivity extends AppCompatActivity {
     private void createBookData() {
         allBookList = new ArrayList<>();
         // Thay R.drawable.sample_illust1 bằng ID ảnh thật của bạn
-        allBookList.add(new Book("Eighty Six", "Asato Asato", "Loading...", "Feb 22, 2022", "No", "Action | Sci-fi", R.drawable.sample_illust1));
-        allBookList.add(new Book("The Alchemist", "Paulo Coelho", "Completed", "Jan 1, 2023", "Yes", "Philosophy", R.drawable.sample_illust2));
-        allBookList.add(new Book("The Hobbit", "J.R.R. Tolkien", "Completed", "Mar 15, 2023", "No", "Fantasy", R.drawable.sample_illust2));
-        allBookList.add(new Book("Brave New World", "Aldous Huxley", "Completed", "Dec 10, 2022", "No", "Dystopian", R.drawable.sample_illust1));
-        allBookList.add(new Book("1984", "George Orwell", "Completed", "Nov 5, 2023", "Yes", "Dystopian", R.drawable.sample_illust1));
-        allBookList.add(new Book("Brave Knight", "B.R. Knight", "Ongoing", "Oct 1, 2024", "Yes", "Adventure", R.drawable.sample_illust2));
+//        allBookList.add(new Book("Eighty Six", "Asato Asato", "Loading...", "Feb 22, 2022", "No", "Action | Sci-fi", R.drawable.sample_illust1));
+//        allBookList.add(new Book("The Alchemist", "Paulo Coelho", "Completed", "Jan 1, 2023", "Yes", "Philosophy", R.drawable.sample_illust2));
+//        allBookList.add(new Book("The Hobbit", "J.R.R. Tolkien", "Completed", "Mar 15, 2023", "No", "Fantasy", R.drawable.sample_illust2));
+//        allBookList.add(new Book("Brave New World", "Aldous Huxley", "Completed", "Dec 10, 2022", "No", "Dystopian", R.drawable.sample_illust1));
+//        allBookList.add(new Book("1984", "George Orwell", "Completed", "Nov 5, 2023", "Yes", "Dystopian", R.drawable.sample_illust1));
+//        allBookList.add(new Book("Brave Knight", "B.R. Knight", "Ongoing", "Oct 1, 2024", "Yes", "Adventure", R.drawable.sample_illust2));
     }
 
 

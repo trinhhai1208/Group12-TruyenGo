@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.truyengo.R;
 
-public class VerifyOTP extends AppCompatActivity {
+public class VerifyOTPActivity extends AppCompatActivity {
     private EditText otp1, otp2, otp3, otp4;
     private TextView btnContinue;
     private TextView resendText, timerText;
@@ -26,7 +26,7 @@ public class VerifyOTP extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_verify_otp);
+        setContentView(R.layout.auth_verify_otp_activity);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

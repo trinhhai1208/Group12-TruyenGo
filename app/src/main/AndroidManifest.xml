@@ -18,7 +18,7 @@
         <!-- android:name=".AccountActivity" -->
         <!-- android:exported="false" /> -->
         <activity
-            android:name=".ui.book.BookDetail"
+            android:name=".ui.book.BookDetailActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

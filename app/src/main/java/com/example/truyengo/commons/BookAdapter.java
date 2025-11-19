@@ -50,7 +50,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // "Thổi phồng" layout item (list_item_book.xml)
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_book, parent, false);
+                .inflate(R.layout.book_list_item_book_activity, parent, false);
         return new BookViewHolder(view);
     }
 

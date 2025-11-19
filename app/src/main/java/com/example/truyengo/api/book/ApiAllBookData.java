@@ -2,12 +2,14 @@ package com.example.truyengo.api.book;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Setter
-@Getter
 public class ApiAllBookData {
     private List<ApiAllBookJson> items;
 
+    public List<ApiAllBookJson> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ApiAllBookJson> books) {
+        this.items = books;
+    }
 }

@@ -4,13 +4,8 @@ import com.example.truyengo.api.chapter.ApiListChapterData;
 import com.example.truyengo.models.book.BookCategory;
 import com.google.gson.annotations.SerializedName;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 
-@Setter
-@Getter
 public class ApiOneBookJson {
     @SerializedName("_id")
     private String id;
@@ -24,4 +19,75 @@ public class ApiOneBookJson {
     private List<ApiListChapterData> chapters;
     private String updatedAt;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getThumbUrl() {
+        return thumbUrl;
+    }
+
+    public void setThumbUrl(String thumbUrl) {
+        this.thumbUrl = thumbUrl;
+    }
+
+    public List<BookCategory> getCategory() {
+        return category;
+    }
+
+    public void setCategory(List<BookCategory> category) {
+        this.category = category;
+    }
+
+    public List<ApiListChapterData> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<ApiListChapterData> chapters) {
+        this.chapters = chapters;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

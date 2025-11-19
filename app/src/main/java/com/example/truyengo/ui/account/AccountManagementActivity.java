@@ -20,7 +20,7 @@ public class AccountManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_management);
+        setContentView(R.layout.account_account_management_activity);
 
         // Ánh xạ view
         btnBack = findViewById(R.id.btnBack);

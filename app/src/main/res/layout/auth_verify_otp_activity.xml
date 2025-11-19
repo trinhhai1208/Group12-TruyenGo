@@ -11,7 +11,7 @@
     android:paddingBottom="@dimen/paddingY"
     android:paddingLeft="@dimen/paddingX"
     android:paddingRight="@dimen/paddingX"
-    tools:context=".ui.auth.VerifyOTP">
+    tools:context=".ui.auth.VerifyOTPActivity">
 
     <Button
         android:layout_width="@dimen/widthBtnBack"
