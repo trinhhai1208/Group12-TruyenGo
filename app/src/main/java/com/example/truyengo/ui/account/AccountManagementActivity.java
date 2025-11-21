@@ -22,7 +22,6 @@ public class AccountManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_account_management_activity);
 
-        // Ánh xạ view
         btnBack = findViewById(R.id.btnBack);
         tvFullName = findViewById(R.id.tvFullName);
         tvName = findViewById(R.id.tvName);
@@ -32,7 +31,6 @@ public class AccountManagementActivity extends AppCompatActivity {
         tvStatus = findViewById(R.id.tvStatus);
         btnChangeName = findViewById(R.id.btnChangeName);
 
-        // Giả lập dữ liệu (bạn có thể load từ API sau)
         tvFullName.setText("Viết Doanh");
         tvName.setText("Viết Doanh");
         tvUsername.setText("Doanh ở Phủ Lý");
@@ -41,7 +39,9 @@ public class AccountManagementActivity extends AppCompatActivity {
         tvStatus.setText("Active");
 
         // Nút quay lại
-        btnBack.setOnClickListener(v -> onBackPressed());
+        btnBack.setOnClickListener(v -> {
+            finish();
+        });
 
         // Nút đổi tên
         btnChangeName.setOnClickListener(v -> showChangeNameDialog());

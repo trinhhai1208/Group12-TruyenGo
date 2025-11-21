@@ -60,6 +60,14 @@ public class Book {
         this.chapters = chapters;
     }
 
+    public Book(String name, String slug, String status, String updatedAt, String thumbnail) {
+        this.name = name;
+        this.slug = slug;
+        this.status = status;
+        this.updatedAt = updatedAt;
+        this.thumbnail = thumbnail;
+    }
+
     public ObjectId getId() {
         return id;
     }

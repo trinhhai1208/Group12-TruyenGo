@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_auth_with_overlay"
+    android:background="@drawable/background"
     android:padding="16dp"
-    tools:context=".ui.account.AccountActivity">
-    <!-- Header -->
+    tools:context=".ui.main.AccountFragment">
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
@@ -21,7 +21,6 @@
         android:textStyle="bold"
         android:layout_marginTop="8dp" />
 
-    <!-- Avatar và tên người dùng -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,15 +48,14 @@
             android:textColor="#1F2024" />
     </LinearLayout>
 
-    <!-- Danh sách các tùy chọn có icon điều hướng -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:divider="?android:attr/listDivider"
-        android:showDividers="middle">
+        android:showDividers="middle"
+        android:layout_marginTop="50dp">
 
-        <!-- Mỗi item -->
         <LinearLayout
             style="@style/AccountItemContainer"
             android:id="@+id/itemAccountManagement">
@@ -115,14 +113,17 @@
 
     </LinearLayout>
 
-    <!-- Hai nút dưới cùng -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="120dp"
-        android:orientation="horizontal">
-
+        android:orientation="horizontal"
+        android:layout_marginBottom="100dp">
         <TextView
             android:id="@+id/btnDeleteAccount"
             android:layout_width="0dp"
@@ -154,17 +155,4 @@
             android:background="@drawable/btn_green" />
     </LinearLayout>
 
-    <!-- Thanh điều hướng dưới -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@drawable/bg_bottom_nav"
-        app:labelVisibilityMode="labeled"
-        app:itemIconTint="@color/nav_icon_color"
-        app:itemTextColor="@color/nav_icon_color"
-        app:menu="@menu/bottom_nav_menu"
-        android:layout_marginTop="20dp"
-        />
 </LinearLayout>

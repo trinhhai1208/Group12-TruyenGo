@@ -15,7 +15,6 @@
         android:padding="24dp"
         android:gravity="center_horizontal">
 
-        <!-- Khung form -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,7 +24,6 @@
             android:background="@drawable/white_box"
             android:elevation="8dp">
 
-            <!-- Tiêu đề -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,7 +41,6 @@
                 android:textColor="#777777"
                 android:layout_marginBottom="20dp" />
 
-            <!-- Tên đăng nhập -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,7 +58,6 @@
                 android:padding="12dp"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Mật khẩu -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,13 +76,12 @@
                 android:padding="12dp"
                 android:layout_marginBottom="12dp" />
 
-            <!-- Nhớ tài khoản + Quên mật khẩu -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="16dp">
 
                 <CheckBox
                     android:id="@+id/cbRemember"
@@ -114,8 +109,25 @@
                     android:focusable="true" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FF0000"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:textStyle="italic"
+                android:layout_marginBottom="8dp"
+                tools:text="Thông báo lỗi sẽ hiện ở đây" />
 
-            <!-- Nút đăng nhập -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="12dp" />
+
             <TextView
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
@@ -129,7 +141,6 @@
                 android:background="@drawable/btn_style"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Liên kết đăng ký -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

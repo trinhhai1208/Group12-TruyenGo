@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:fitsSystemWindows="true"
-    tools:context=".ui.account.AccountInfoActivity">
+    tools:context=".ui.auth.AccountInfoActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
