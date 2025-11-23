@@ -1,6 +1,8 @@
 package com.example.truyengo.models.chapter;
 
-public class AllChapters {
+import java.io.Serializable;
+
+public class AllChapters implements Serializable {
     private String filename;
     private String chapter_name;
     private String chapterData;
