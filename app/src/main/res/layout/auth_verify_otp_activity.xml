@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_auth_with_overlay"
+    android:background="@drawable/bg_white_rounded"
     android:paddingTop="@dimen/paddingY"
     android:paddingBottom="@dimen/paddingY"
     android:paddingLeft="@dimen/paddingX"

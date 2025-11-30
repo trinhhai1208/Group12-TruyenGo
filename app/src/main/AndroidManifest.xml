@@ -60,6 +60,10 @@
             android:name=".ui.book.ReadActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.chatbot.ChatbotActivity"
+            android:exported="false" />
+
     </application>
 
     <uses-permission
