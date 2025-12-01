@@ -1,11 +1,11 @@
-package com.example.truyengo.dto;
+package com.example.truyengo.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 import lombok.Getter;
 
 @Getter
-public class LoginResponse {
+public class LoginResponseDto {
 
     @SerializedName("status")
     private String status;

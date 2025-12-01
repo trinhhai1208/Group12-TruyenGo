@@ -12,10 +12,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.truyengo.R;
-import com.example.truyengo.dto.LoginRequest;
-import com.example.truyengo.dto.LoginResponse;
+import com.example.truyengo.dto.request.auth.AuthData;
+import com.example.truyengo.dto.request.auth.LoginRequestDto;
+import com.example.truyengo.dto.response.BaseResponse;
+import com.example.truyengo.dto.response.LoginResponseDto;
 import com.example.truyengo.ui.main.MainActivity;
 import com.example.truyengo.utils.ApiClient;
+import com.example.truyengo.utils.TokenManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setListeners() {
-        btnLogin.setOnClickListener(v -> handleLoginApi());
+        btnLogin.setOnClickListener(v -> handleLogin());
 
         tvRegisterNow.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -64,53 +67,53 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void handleLoginApi() {
+    private void handleLogin() {
         String username = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (username.isEmpty()) {
-            showMessage("Xin mời nhập tên tài khoản");
-            return;
-        }
-        if (password.isEmpty()) {
-            showMessage("Xin mời nhập mật khẩu");
-            return;
-        }
+        LoginRequestDto request = new LoginRequestDto(username, password);
 
-        // 2. Hiển thị Loading
-        setLoadingState(true);
-        if (tvMessage != null) tvMessage.setText("");
-
-        // 3. Gọi API thông qua Retrofit
-        LoginRequest request = new LoginRequest(username, password);
-
-        ApiClient.getApiService().login(request).enqueue(new Callback<LoginResponse>() {
+        ApiClient.getApiService().login(request).enqueue(new Callback<BaseResponse<AuthData>>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                setLoadingState(false);
-
+            public void onResponse(Call<BaseResponse<AuthData>> call, Response<BaseResponse<AuthData>> response) {
+                // Check HTTP Code 200
                 if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse loginResponse = response.body();
+                    BaseResponse<AuthData> body = response.body();
 
-                    if (loginResponse.getData().getStatus().equals("OK")) {
-                        if (cbRemember.isChecked()) {
-                            saveLoginInfoLocal(username, password);
-                        }
+                    // Check "status": "SUCCESS" trong JSON body
+                    if (body.isSuccess() && body.getData() != null) {
+                        AuthData data = body.getData();
 
-                        navigateToHome();
+                        // --- QUAN TRỌNG: LƯU TOKEN & USER ID ---
+                        TokenManager tokenManager = new TokenManager(LoginActivity.this);
+                        tokenManager.saveAuthInfo(
+                                data.getAccessToken(),
+                                data.getRefreshToken(),
+                                data.getId() // userId lấy từ trường "id"
+                        );
+
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
+                        // Chuyển màn hình
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
 
                     } else {
-                        showMessage(loginResponse.getData().getMessage());
+                        // Trường hợp server trả về 200 nhưng status != SUCCESS (nếu có)
+                        // Hoặc lấy message từ bên trong data
+                        String msg = (body.getData() != null) ? body.getData().getMessage() : "Đăng nhập thất bại";
+                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    showMessage("Lỗi hệ thống: " + response.code());
+                    // Lỗi 400, 401, 500...
+                    Toast.makeText(LoginActivity.this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                setLoadingState(false);
-                showMessage("Lỗi kết nối mạng: " + t.getMessage());
+            public void onFailure(Call<BaseResponse<AuthData>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

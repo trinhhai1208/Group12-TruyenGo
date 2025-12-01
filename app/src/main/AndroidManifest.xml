@@ -61,7 +61,13 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.chatbot.ChatbotActivity"
+            android:name=".ui.auth.VerifyOTPActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.ResetPasswordActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:exported="false" />
 
     </application>
