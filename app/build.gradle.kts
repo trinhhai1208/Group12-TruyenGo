@@ -28,6 +28,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    packaging {
+        resources {
+            pickFirsts += "META-INF/**"
+        }
+    }
+}
+
+configurations.all {
+    exclude(group = "org.mongodb", module = "bson-record-codec")
 }
 
 dependencies {
@@ -41,11 +51,15 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.bson)
     implementation(libs.lombok)
+    annotationProcessor(libs.lombok)
     implementation(libs.jakarta.mail.api)
     implementation(libs.gson)
     implementation(libs.mongodb.driver.sync)
     implementation(libs.jbcrypt)
     implementation(libs.okhttp.v4100)
     implementation(libs.json)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.glide)
 
 }
