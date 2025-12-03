@@ -1,7 +1,5 @@
 package com.example.truyengo.services;
 
-import com.example.truyengo.dto.request.FavoriteRequest;
-import com.example.truyengo.dto.request.HistoryRequest;
 import com.example.truyengo.dto.request.auth.AuthData;
 import com.example.truyengo.dto.request.auth.ForgotPasswordRequestDto;
 import com.example.truyengo.dto.request.auth.LoginRequestDto;
@@ -9,6 +7,7 @@ import com.example.truyengo.dto.request.auth.RegisterRequestDto;
 import com.example.truyengo.dto.request.auth.ResetPasswordRequestDto;
 import com.example.truyengo.dto.request.auth.VerifyOtpRequestDto;
 import com.example.truyengo.dto.response.BaseResponse;
+import com.example.truyengo.dto.response.LastReadHistoryResponseDto;
 import com.example.truyengo.dto.response.UserResponseDto;
 import com.example.truyengo.models.book.Book;
 
@@ -47,17 +46,43 @@ public interface AuthApiService {
 
     // Book
     @POST("api/v1/user/history")
-    Call<String> addToHistory(@Body HistoryRequest request);
+    Call<BaseResponse<String>> addToHistory(
+            @Header("Authorization") String token,
+            @Query("userId") String userId,
+            @Query("bookId") String bookId,
+            @Query("chapter") int chapter
+    );
+
+    @GET("api/v1/user/history/book")
+    Call<BaseResponse<LastReadHistoryResponseDto>> getLastReadChapter(
+            @Header("Authorization") String token,
+            @Query("userId") String userId,
+            @Query("bookId") String bookId
+    );
 
     @GET("api/v1/user/history/{userId}")
-    Call<List<Book>> getHistory(@Path("userId") String userId);
+    Call<BaseResponse<List<Book>>> getHistory(
+            @Header("Authorization") String token,
+            @Path("userId") String userId
+    );
 
     @POST("api/v1/user/favorite")
-    Call<Void> toggleFavorite(@Body FavoriteRequest request);
+    Call<BaseResponse<Boolean>> toggleFavorite(
+            @Header("Authorization") String token,
+            @Query("userId") String userId,
+            @Query("bookId") String bookId
+    );
 
     @GET("api/v1/user/favorite/{userId}")
-    Call<List<Book>> getFavorites(@Path("userId")String userId);
+    Call<BaseResponse<List<Book>>> getFavorites(
+            @Header("Authorization") String token,
+            @Path("userId") String userId
+    );
 
     @GET("api/v1/user/favorite/check")
-    Call<Boolean> checkIsFavorite(@Query("userId") String userId, @Query("bookId") String bookId);
+    Call<BaseResponse<Boolean>> checkIsFavorite(
+            @Header("Authorization") String token,
+            @Query("userId") String userId,
+            @Query("bookId") String bookId
+    );
 }

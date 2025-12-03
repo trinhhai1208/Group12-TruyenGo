@@ -1,5 +1,6 @@
 package com.example.truyengo.ui.book;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -17,8 +18,13 @@ import com.example.truyengo.R;
 import com.example.truyengo.api.book.ApiOneBookResponse; // Đảm bảo import đúng package
 import com.example.truyengo.commons.ChapterAdapter;
 import com.example.truyengo.data.GetChapters; // Import class GetChapters của bạn
+import com.example.truyengo.dto.response.BaseResponse;
+import com.example.truyengo.dto.response.LastReadHistoryResponseDto;
 import com.example.truyengo.models.book.Book;
 import com.example.truyengo.models.chapter.AllChapters;
+import com.example.truyengo.ui.auth.LoginActivity;
+import com.example.truyengo.utils.ApiClient;
+import com.example.truyengo.utils.TokenManager;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -26,8 +32,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BookDetailActivity extends AppCompatActivity {
 
@@ -131,6 +142,10 @@ public class BookDetailActivity extends AppCompatActivity {
             tvDetailContent.setText(android.text.Html.fromHtml(book.getContent(), android.text.Html.FROM_HTML_MODE_LEGACY));
         }
 
+        if (book.getId() != null) {
+            loadBookByHistoryAndFavorite(book.getId());
+        }
+
         // 2. Load ảnh bìa
         String baseUrl = "https://img.otruyenapi.com/uploads/comics/";
         String thumbUrl = book.getThumbnail(); // Hoặc getThumbUrl() tùy model
@@ -205,6 +220,95 @@ public class BookDetailActivity extends AppCompatActivity {
         }
         return result.toString();
     }
+
+    private void loadBookByHistoryAndFavorite(String bookId) {
+        // 1. Lấy Token (Giống code mẫu)
+        TokenManager tokenManager = new TokenManager(this);
+        String token = tokenManager.getAccessToken();
+        String userId = tokenManager.getUserId();
+
+        if (token == null) {
+            Toast.makeText(this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
+            navigateToActivity(LoginActivity.class, true);
+            return;
+        }
+
+        String authHeader = "Bearer " + token;
+
+        // 2. Gọi API getHistory
+        ApiClient.getApiService().getLastReadChapter(authHeader, userId, bookId).enqueue(new Callback<BaseResponse<LastReadHistoryResponseDto>>() {
+            @Override
+            public void onResponse(Call<BaseResponse<LastReadHistoryResponseDto>> call, Response<BaseResponse<LastReadHistoryResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BaseResponse<LastReadHistoryResponseDto> body = response.body();
+
+                    // Kiểm tra success và data có tồn tại không
+                    if (body.isSuccess() && body.getData() != null) {
+                        LastReadHistoryResponseDto books = body.getData();
+
+                        String chapterNum = String.valueOf(books.getLastReadChapter());
+                        if (books.getLastReadChapter() != 1) {
+                            btnContinue.setText("Tiếp tục đọc chapter " + chapterNum);
+                        } else {
+                            btnContinue.setText("Đọc ngay");
+                        }
+                    } else {
+                        btnContinue.setText("Đọc ngay");
+                    }
+                } else {
+                    android.util.Log.e("API_ERROR", "Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse<LastReadHistoryResponseDto>> call, Throwable t) {
+                android.util.Log.e("Check history error", "Lỗi: " + t.getMessage());
+                Toast.makeText(BookDetailActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ApiClient.getApiService().checkIsFavorite(authHeader, userId, bookId).enqueue(new Callback<BaseResponse<Boolean>>() {
+            @Override
+            public void onResponse(Call<BaseResponse<Boolean>> call, Response<BaseResponse<Boolean>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BaseResponse<Boolean> body = response.body();
+
+                    // Kiểm tra success và data có tồn tại không
+                    if (body.isSuccess() && body.getData() != null) {
+                        Boolean books = body.getData();
+
+                        if (books.TRUE) {
+                            btnFavorite.setImageResource(R.drawable.ic_heart_red);
+                        } else {
+                            btnFavorite.setImageResource(R.drawable.ic_heart_black);
+                        }
+                    } else {
+                        btnFavorite.setImageResource(R.drawable.ic_heart_black);
+                    }
+                } else {
+                    android.util.Log.e("API_ERROR", "Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse<Boolean>> call, Throwable t) {
+                android.util.Log.e("Check favorite error", "Lỗi: " + t.getMessage());
+                Toast.makeText(BookDetailActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void navigateToActivity(Class<?> targetClass, boolean isClearHistory) {
+        Intent intent = new Intent(this, targetClass);
+        if (isClearHistory) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish(); // Đóng Activity hiện tại
+        } else {
+            startActivity(intent);
+        }
+    }
+
 
     private void showOverview() {
         layoutOverview.setVisibility(View.VISIBLE);

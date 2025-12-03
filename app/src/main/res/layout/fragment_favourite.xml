@@ -5,25 +5,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EAF4ED"
-    tools:context=".ui.library.HistoryActivity">
+    android:background="@drawable/background"
+    tools:context=".ui.main.FavoriteFragment">
 
-    <!-- Nội dung chính -->
-    <ScrollView
-        android:id="@+id/scrollView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFavorite"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#EAF4ED"
-        android:scrollbars="none"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:id="@+id/book_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        </LinearLayout>
-    </ScrollView>
+        android:padding="12dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
 
 </FrameLayout>

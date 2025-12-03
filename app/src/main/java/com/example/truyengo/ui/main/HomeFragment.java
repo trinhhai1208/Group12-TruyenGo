@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,25 +15,36 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.example.truyengo.R;
 import com.example.truyengo.commons.BannerAdapter;
 import com.example.truyengo.commons.BookGridAdapter;
 import com.example.truyengo.data.GetAllBook;
+import com.example.truyengo.dto.response.BaseResponse;
+import com.example.truyengo.dto.response.UserResponseDto;
 import com.example.truyengo.models.book.Book;
+import com.example.truyengo.ui.auth.LoginActivity;
 import com.example.truyengo.ui.book.BookListActivity;
+import com.example.truyengo.utils.ApiClient;
+import com.example.truyengo.utils.TokenManager;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
     private ViewPager2 viewPagerBanner;
+
+    private TextView tvUsername;
+    private ImageView ivAvatar;
 
     // Khai báo 4 RecyclerView
     private RecyclerView rvRecommended, rvNewGrid, rvComingUp, rvCompletedGrid;
@@ -71,6 +83,9 @@ public class HomeFragment extends Fragment {
         TextView tvMoreUpComingBook = view.findViewById(R.id.tvMoreUpComingBook);
         TextView tvMoreCompletedBook= view.findViewById(R.id.tvMoreCompletedBook);
 
+        tvUsername = view.findViewById(R.id.tvUsername);
+        ivAvatar = view.findViewById(R.id.ivAvatar);
+
         // 1. Ánh xạ Views
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
         rvNewGrid = view.findViewById(R.id.rvNewGrid);
@@ -83,6 +98,8 @@ public class HomeFragment extends Fragment {
 
         // 3. Load dữ liệu
         loadAllData();
+
+        loadUserProfile();
 
         tvMoreNewBook.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), BookListActivity.class);
@@ -189,6 +206,79 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void loadUserProfile() {
+        TokenManager tokenManager = new TokenManager(getContext());
+        String accessToken = tokenManager.getAccessToken();
+
+        // Nếu chưa đăng nhập thì thôi không gọi API
+        if (accessToken == null) return;
+
+        // Header Authorization: Bearer <token>
+        String authHeader = "Bearer " + accessToken;
+
+        ApiClient.getApiService().getUserProfile(authHeader).enqueue(new Callback<BaseResponse<UserResponseDto>>() {
+            @Override
+            public void onResponse(Call<BaseResponse<UserResponseDto>> call, Response<BaseResponse<UserResponseDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BaseResponse<UserResponseDto> body = response.body();
+
+                    if (body.isSuccess() && body.getData() != null) {
+                        // API trả về thành công -> Cập nhật giao diện
+                        updateUI(body.getData());
+                    }
+                } else {
+                    if (response.code() == 401) {
+                        // Token hết hạn -> Bắt đăng nhập lại
+                        Toast.makeText(getContext(), "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
+                        navigateToActivity(LoginActivity.class, true);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse<UserResponseDto>> call, Throwable t) {
+                // Lỗi mạng, có thể log ra hoặc kệ (giữ nguyên UI mặc định)
+            }
+        });
+    }
+
+    private void updateUI(UserResponseDto user) {
+        if (user == null) return;
+
+        // 1. Cập nhật Tên hiển thị
+        // Ưu tiên hiển thị FullName (FirstName + LastName), nếu rỗng thì hiện Username
+        String displayName = user.getFullName();
+        if (displayName == null || displayName.trim().isEmpty()) {
+            displayName = user.getUsername();
+        }
+
+        tvUsername.setText(displayName);
+
+        // 2. Cập nhật Avatar (Dùng Glide)
+        // Kiểm tra nếu linkAvatar có dữ liệu thì load, không thì giữ nguyên ảnh mặc định
+        if (user.getLinkAvatar() != null && !user.getLinkAvatar().isEmpty()) {
+            Glide.with(this)
+                    .load(user.getLinkAvatar())
+                    .placeholder(R.drawable.circle_bg) // Ảnh chờ
+                    .error(R.drawable.ic_person)       // Ảnh lỗi
+                    .circleCrop()                      // Bo tròn ảnh
+                    .into(ivAvatar);
+        }
+    }
+
+    private void navigateToActivity(Class<?> targetClass, boolean isClearHistory) {
+        if (getActivity() != null) {
+            Intent intent = new Intent(getActivity(), targetClass);
+            if (isClearHistory) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                getActivity().finish(); // Đóng Activity cha
+            } else {
+                startActivity(intent);
+            }
+        }
     }
 
     @Override

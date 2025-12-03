@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 import java.util.List;
 
 public class Book {
-    private ObjectId id;
+    private String id;
     private String name;
     private String slug;
     private String status;
@@ -28,7 +28,7 @@ public class Book {
     }
 
     public Book(String id, String name, String slug, String status, String updatedAt, String thumbnail, List<BookCategory> category, List<BookChapterLastest> chapterLastests) {
-        this.id = new ObjectId(id);
+        this.id = id;
         this.name = name;
         this.slug = slug;
         this.status = status;
@@ -39,7 +39,7 @@ public class Book {
     }
 
     public Book(String id, String name, String slug, String content, String status, String thumbnail, List<BookCategory> category, List<ApiListChapterData> chapters, String updatedAt) {
-        this.id = new ObjectId(id);
+        this.id = id;
         this.name = name;
         this.slug = slug;
         this.content = content;
@@ -68,11 +68,11 @@ public class Book {
         this.thumbnail = thumbnail;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
