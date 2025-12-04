@@ -24,14 +24,27 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     private Context context;
     private List<AllChapters> chapterList;
     private String bookThumbUrl;
-    private String bookName; // 1. Thêm biến lưu tên truyện
+    private String bookName;
 
-    // 2. Cập nhật Constructor nhận thêm bookName
-    public ChapterAdapter(Context context, String bookThumbUrl, String bookName) {
+    // 1. Khai báo Interface để lắng nghe sự kiện click
+    public interface OnChapterClickListener {
+        void onChapterClick(AllChapters chapter);
+    }
+
+    private OnChapterClickListener listener;
+
+    // 2. Cập nhật Constructor nhận thêm Listener
+    public ChapterAdapter(Context context, String bookThumbUrl, String bookName, OnChapterClickListener listener) {
         this.context = context;
         this.bookThumbUrl = bookThumbUrl;
         this.bookName = bookName;
+        this.listener = listener; // Lưu listener lại
         this.chapterList = new ArrayList<>();
+    }
+
+    // Constructor cũ (nếu bạn muốn giữ tương thích ngược, nhưng tốt nhất nên dùng cái trên)
+    public ChapterAdapter(Context context, String bookThumbUrl, String bookName) {
+        this(context, bookThumbUrl, bookName, null);
     }
 
     public void setChapters(List<AllChapters> chapters) {
@@ -42,7 +55,6 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     @NonNull
     @Override
     public ChapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Lưu ý: Đảm bảo bạn đã tạo file layout item_chapter.xml như hướng dẫn trước
         View view = LayoutInflater.from(context).inflate(R.layout.book_list_chapter_activity, parent, false);
         return new ChapterViewHolder(view);
     }
@@ -54,25 +66,30 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
         // Hiển thị tên chương
         holder.tvChapterName.setText("Chapter " + chapter.getChapter_name());
 
-        // Hiển thị tên file hoặc title (nếu có)
+        // Hiển thị tên file hoặc title
         holder.tvFileName.setText(chapter.getFilename());
 
-        // Load ảnh bìa (Ghép link nếu cần)
+        // Load ảnh bìa
         String fullUrl = "https://img.otruyenapi.com/uploads/comics/" + bookThumbUrl;
         Glide.with(context).load(fullUrl).placeholder(R.drawable.bg_button_continue).into(holder.imgChapterThumb);
 
-        // 3. Xử lý sự kiện click chuyển sang màn hình đọc
+        // 3. Xử lý sự kiện click
         holder.itemView.setOnClickListener(v -> {
+            // A. Gọi listener để Activity biết mà lưu lịch sử API
+            if (listener != null) {
+                listener.onChapterClick(chapter);
+            }
+
+            // B. Chuyển sang màn hình đọc (Logic cũ của bạn)
             Intent intent = new Intent(context, ReadActivity.class);
 
-            // Truyền danh sách tất cả các chương (Để nút Next/Prev hoạt động)
-            // Lưu ý: Class AllChapters phải implements Serializable
+            // Truyền danh sách chương để Next/Prev
             intent.putExtra("ALL_CHAPTERS", (ArrayList<AllChapters>) chapterList);
 
-            // Truyền vị trí chương hiện tại đang bấm
+            // Truyền vị trí hiện tại
             intent.putExtra("CURRENT_INDEX", position);
 
-            // Truyền tên truyện để hiển thị trên Header
+            // Truyền tên truyện
             intent.putExtra("BOOK_NAME", bookName);
 
             context.startActivity(intent);
@@ -90,10 +107,9 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
 
         public ChapterViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Ánh xạ View từ file item_chapter.xml
             imgChapterThumb = itemView.findViewById(R.id.imgChapterThumb);
-            tvChapterName = itemView.findViewById(R.id.tvChapterName); // Hoặc tvChapterNum tùy ID bạn đặt
-            tvFileName = itemView.findViewById(R.id.tvFileName); // Hoặc tvChapterTitle tùy ID bạn đặt
+            tvChapterName = itemView.findViewById(R.id.tvChapterName);
+            tvFileName = itemView.findViewById(R.id.tvFileName);
         }
     }
 }

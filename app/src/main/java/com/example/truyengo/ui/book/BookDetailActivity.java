@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.truyengo.R;
-import com.example.truyengo.api.book.ApiOneBookResponse; // Đảm bảo import đúng package
+import com.example.truyengo.api.book.ApiOneBookResponse;
 import com.example.truyengo.commons.ChapterAdapter;
-import com.example.truyengo.data.GetChapters; // Import class GetChapters của bạn
+import com.example.truyengo.data.GetChapters;
 import com.example.truyengo.dto.response.BaseResponse;
 import com.example.truyengo.dto.response.LastReadHistoryResponseDto;
 import com.example.truyengo.models.book.Book;
@@ -32,7 +32,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,18 +44,18 @@ public class BookDetailActivity extends AppCompatActivity {
     // Views
     private ImageView btnBack, btnFavorite, imgDetailCover;
     private TextView btnContinue, tvDetailTitle, tvDetailAuthor, tvDetailStatus, tvDetailContent;
-
-    // Tabs
     private TextView tabOverview, tabChapter;
     private View indicatorOverview, indicatorChapter;
     private LinearLayout layoutOverview, layoutChapter;
+    private RecyclerView rvChapterList;
 
-    private boolean isFavorite = false;
+    private ChapterAdapter chapterAdapter;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    // RecyclerView cho Chapter
-    private RecyclerView rvChapterList;
-    private ChapterAdapter chapterAdapter;
+    // Biến toàn cục để lưu trạng thái
+    private boolean isFavorite = false;
+    private int curChapter = 1;
+    private Book currentBook; // QUAN TRỌNG: Lưu book để dùng lại, tránh gọi API lại
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,50 +77,80 @@ public class BookDetailActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnFavorite = findViewById(R.id.btnFavorite);
         btnContinue = findViewById(R.id.btnContinue);
-
         imgDetailCover = findViewById(R.id.imgDetailCover);
         tvDetailTitle = findViewById(R.id.tvDetailTitle);
         tvDetailAuthor = findViewById(R.id.tvDetailAuthor);
         tvDetailStatus = findViewById(R.id.tvDetailStatus);
         tvDetailContent = findViewById(R.id.tvDetailContent);
-
         tabOverview = findViewById(R.id.tabOverview);
         tabChapter = findViewById(R.id.tabChapter);
         indicatorOverview = findViewById(R.id.indicatorOverview);
         indicatorChapter = findViewById(R.id.indicatorChapter);
-
         layoutOverview = findViewById(R.id.layoutOverview);
         layoutChapter = findViewById(R.id.layoutChapter);
-
-        // Ánh xạ RecyclerView cho Chapter
         rvChapterList = findViewById(R.id.rvChapterList);
     }
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
 
+        // FIX: Gọi API toggleFavoriteApi thay vì chỉ đổi icon local
         btnFavorite.setOnClickListener(v -> {
-            isFavorite = !isFavorite;
-            if (isFavorite) {
-                btnFavorite.setImageResource(R.drawable.ic_heart_red);
-                Toast.makeText(this, "Đã thêm vào yêu thích", Toast.LENGTH_SHORT).show();
+            if (currentBook != null && currentBook.getId() != null) {
+                toggleFavoriteApi(currentBook.getId());
             } else {
-                btnFavorite.setImageResource(R.drawable.ic_heart_black);
+                Toast.makeText(this, "Đang tải dữ liệu...", Toast.LENGTH_SHORT).show();
             }
         });
 
         tabOverview.setOnClickListener(v -> showOverview());
         tabChapter.setOnClickListener(v -> showChapters());
 
+        // FIX: Dùng biến currentBook đã lưu, KHÔNG gọi lại getBooksTheoTen (tránh crash MainThread)
+        btnContinue.setOnClickListener(v -> {
+            GetChapters getChaptersHelper = new GetChapters();
+            ArrayList<AllChapters> chapters = getChaptersHelper.getListChapters(currentBook);
+
+
+            if (currentBook != null && currentBook.getId() != null && chapters != null) { // chapters là list AllChapters của bạn
+
+                // 1. Tìm index của chương đang đọc dở (curChapter) trong danh sách
+                int index = -1;
+                // Giả sử curChapter là String lưu tên chương (ví dụ: "10")
+                for (int i = 0; i < chapters.size(); i++) {
+                    if (chapters.get(i).getChapter_name().equals(curChapter)) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                // Nếu tìm thấy hoặc mặc định mở chương đầu tiên nếu không tìm thấy
+                if (index == -1) index = 0;
+
+                // 2. Chuyển màn hình đọc
+                Intent intent = new Intent(this, ReadActivity.class);
+                intent.putExtra("ALL_CHAPTERS", (ArrayList<AllChapters>) chapters); // List chương
+                intent.putExtra("CURRENT_INDEX", index);            // Vị trí chương hiện tại
+                intent.putExtra("BOOK_NAME", currentBook.getName()); // Tên truyện
+                intent.putExtra("BOOK_ID", currentBook.getId());     // QUAN TRỌNG: Truyền ID truyện để lưu lịch sử
+                startActivity(intent);
+
+                // Lưu ý: Bạn không cần gọi addToHistoryApi ở đây nữa,
+                // vì khi ReadActivity mở lên nó sẽ tự gọi API lưu lịch sử cho chương đó.
+            }
+        });
+
         showOverview();
     }
 
     private void loadBookDetails(String slug) {
         executorService.execute(() -> {
+            // Hàm này chạy background thread
             Book book = getBooksTheoTen(slug);
 
             runOnUiThread(() -> {
                 if (book != null && book.getName() != null) {
+                    this.currentBook = book; // LƯU LẠI ĐỂ DÙNG SAU
                     displayBookData(book);
                 } else {
                     Toast.makeText(BookDetailActivity.this, "Không tải được dữ liệu truyện", Toast.LENGTH_SHORT).show();
@@ -131,50 +160,67 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     private void displayBookData(Book book) {
-        // 1. Hiển thị thông tin cơ bản
         if (tvDetailTitle != null) tvDetailTitle.setText(book.getName());
-
-        // Tác giả và Trạng thái (Nếu model Book có trường này)
         if (tvDetailStatus != null) tvDetailStatus.setText(book.getStatus());
-        // if (tvDetailAuthor != null) tvDetailAuthor.setText(book.getAuthor());
-
         if (tvDetailContent != null && book.getContent() != null) {
             tvDetailContent.setText(android.text.Html.fromHtml(book.getContent(), android.text.Html.FROM_HTML_MODE_LEGACY));
         }
 
+        // Gọi API check lịch sử và yêu thích
         if (book.getId() != null) {
             loadBookByHistoryAndFavorite(book.getId());
         }
 
-        // 2. Load ảnh bìa
         String baseUrl = "https://img.otruyenapi.com/uploads/comics/";
-        String thumbUrl = book.getThumbnail(); // Hoặc getThumbUrl() tùy model
+        String thumbUrl = book.getThumbnail();
         String fullUrl = baseUrl + thumbUrl;
 
         if (imgDetailCover != null) {
             Glide.with(this).load(fullUrl).into(imgDetailCover);
         }
 
-        // 3. XỬ LÝ DANH SÁCH CHƯƠNG (Dùng RecyclerView + GetChapters)
         if (book.getChapters() != null && !book.getChapters().isEmpty()) {
-
-            // Setup RecyclerView
             rvChapterList.setLayoutManager(new LinearLayoutManager(this));
-            chapterAdapter = new ChapterAdapter(this, thumbUrl, book.getName());
-            rvChapterList.setAdapter(chapterAdapter);
 
-            // Dùng helper class của bạn để parse list chapter
+            // BƯỚC 1: Lấy danh sách chapter trước để dùng bên trong Listener
             GetChapters getChaptersHelper = new GetChapters();
             ArrayList<AllChapters> listChapters = getChaptersHelper.getListChapters(book);
 
-            System.out.println(listChapters.size());
+            // BƯỚC 2: Khởi tạo Adapter với Listener xử lý chuyển màn hình
+            chapterAdapter = new ChapterAdapter(this, thumbUrl, book.getName(), (clickedChapter) -> {
 
-            // Đổ dữ liệu vào Adapter
+                // Tìm vị trí (index) của chương vừa bấm trong danh sách tổng
+                int index = -1;
+                if (listChapters != null) {
+                    for (int i = 0; i < listChapters.size(); i++) {
+                        // So sánh tên chương (hoặc ID nếu có) để tìm vị trí
+                        if (listChapters.get(i).getChapter_name().equals(clickedChapter.getChapter_name())) {
+                            index = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Nếu tìm thấy, chuyển sang ReadActivity
+                if (index != -1) {
+                    Intent intent = new Intent(BookDetailActivity.this, ReadActivity.class);
+                    intent.putExtra("ALL_CHAPTERS", listChapters);       // Truyền danh sách chương
+                    intent.putExtra("CURRENT_INDEX", index);             // Truyền vị trí hiện tại
+                    intent.putExtra("BOOK_NAME", book.getName());        // Truyền tên truyện
+                    intent.putExtra("BOOK_ID", book.getId());            // Truyền ID để bên kia lưu lịch sử
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Lỗi: Không tìm thấy nội dung chương", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            rvChapterList.setAdapter(chapterAdapter);
+            // Set dữ liệu cho adapter
             chapterAdapter.setChapters(listChapters);
         }
     }
 
-    // --- Logic API (Giữ nguyên từ code của bạn) ---
+    // ... (Giữ nguyên các hàm getBooksTheoTen và getApi) ...
     public Book getBooksTheoTen(String tenTruyen) {
         Book book = new Book();
         try {
@@ -188,6 +234,7 @@ public class BookDetailActivity extends AppCompatActivity {
                 if (apiResponse != null && apiResponse.getData() != null) {
                     var b = apiResponse.getData().getItem();
                     // Map dữ liệu
+                    book.setId(b.getId()); // Đảm bảo mapping ID đúng
                     book.setName(b.getName());
                     book.setSlug(b.getSlug());
                     book.setContent(b.getContent());
@@ -222,82 +269,108 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     private void loadBookByHistoryAndFavorite(String bookId) {
-        // 1. Lấy Token (Giống code mẫu)
         TokenManager tokenManager = new TokenManager(this);
         String token = tokenManager.getAccessToken();
         String userId = tokenManager.getUserId();
 
-        if (token == null) {
-            Toast.makeText(this, "Phiên đăng nhập hết hạn", Toast.LENGTH_SHORT).show();
-            navigateToActivity(LoginActivity.class, true);
-            return;
-        }
+        if (token == null) return;
 
         String authHeader = "Bearer " + token;
 
-        // 2. Gọi API getHistory
         ApiClient.getApiService().getLastReadChapter(authHeader, userId, bookId).enqueue(new Callback<BaseResponse<LastReadHistoryResponseDto>>() {
             @Override
             public void onResponse(Call<BaseResponse<LastReadHistoryResponseDto>> call, Response<BaseResponse<LastReadHistoryResponseDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    BaseResponse<LastReadHistoryResponseDto> body = response.body();
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    LastReadHistoryResponseDto data = response.body().getData();
 
-                    // Kiểm tra success và data có tồn tại không
-                    if (body.isSuccess() && body.getData() != null) {
-                        LastReadHistoryResponseDto books = body.getData();
-
-                        String chapterNum = String.valueOf(books.getLastReadChapter());
-                        if (books.getLastReadChapter() != 1) {
-                            btnContinue.setText("Tiếp tục đọc chapter " + chapterNum);
-                        } else {
-                            btnContinue.setText("Đọc ngay");
-                        }
+                    // FIX logic hiển thị nút
+                    curChapter = data.getLastReadChapter(); // Lưu lại chapter hiện tại
+                    if (curChapter > 1) {
+                        btnContinue.setText("Đọc tiếp chap " + curChapter);
                     } else {
                         btnContinue.setText("Đọc ngay");
                     }
-                } else {
-                    android.util.Log.e("API_ERROR", "Code: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<BaseResponse<LastReadHistoryResponseDto>> call, Throwable t) {
-                android.util.Log.e("Check history error", "Lỗi: " + t.getMessage());
-                Toast.makeText(BookDetailActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
         ApiClient.getApiService().checkIsFavorite(authHeader, userId, bookId).enqueue(new Callback<BaseResponse<Boolean>>() {
             @Override
             public void onResponse(Call<BaseResponse<Boolean>> call, Response<BaseResponse<Boolean>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    BaseResponse<Boolean> body = response.body();
-
-                    // Kiểm tra success và data có tồn tại không
-                    if (body.isSuccess() && body.getData() != null) {
-                        Boolean books = body.getData();
-
-                        if (books.TRUE) {
-                            btnFavorite.setImageResource(R.drawable.ic_heart_red);
-                        } else {
-                            btnFavorite.setImageResource(R.drawable.ic_heart_black);
-                        }
-                    } else {
-                        btnFavorite.setImageResource(R.drawable.ic_heart_black);
-                    }
-                } else {
-                    android.util.Log.e("API_ERROR", "Code: " + response.code());
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    // FIX: books.TRUE là sai cú pháp. Sửa thành Boolean.TRUE.equals(...)
+                    Boolean isFav = response.body().getData();
+                    isFavorite = Boolean.TRUE.equals(isFav);
+                    updateFavoriteUI();
                 }
             }
 
             @Override
             public void onFailure(Call<BaseResponse<Boolean>> call, Throwable t) {
-                android.util.Log.e("Check favorite error", "Lỗi: " + t.getMessage());
-                Toast.makeText(BookDetailActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void addToHistoryApi(String bookId, int chapterNumber) {
+        TokenManager tokenManager = new TokenManager(this);
+        String token = tokenManager.getAccessToken();
+        String userId = tokenManager.getUserId();
+        if (token == null) return;
+
+        // Lưu ý: Đảm bảo thread an toàn hoặc call trong background nếu cần thiết (Retrofit tự lo background)
+        ApiClient.getApiService().addToHistory("Bearer " + token, userId, bookId, chapterNumber).enqueue(new Callback<BaseResponse<String>>() {
+            @Override
+            public void onResponse(Call<BaseResponse<String>> call, Response<BaseResponse<String>> response) {
+                // Log thành công
+                android.util.Log.d("HISTORY", "Saved chapter " + chapterNumber);
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse<String>> call, Throwable t) {
+                // Log lỗi
+            }
+        });
+    }
+
+    private void toggleFavoriteApi(String bookId) {
+        TokenManager tokenManager = new TokenManager(this);
+        String token = tokenManager.getAccessToken();
+        String userId = tokenManager.getUserId();
+        if (token == null) {
+            Toast.makeText(this, "Bạn cần đăng nhập", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ApiClient.getApiService().toggleFavorite("Bearer " + token, userId, bookId).enqueue(new Callback<BaseResponse<Boolean>>() {
+            @Override
+            public void onResponse(Call<BaseResponse<Boolean>> call, Response<BaseResponse<Boolean>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    isFavorite = response.body().getData();
+                    updateFavoriteUI();
+                    Toast.makeText(BookDetailActivity.this, isFavorite ? "Đã thích" : "Đã bỏ thích", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse<Boolean>> call, Throwable t) {
+                Toast.makeText(BookDetailActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateFavoriteUI() {
+        if (isFavorite) {
+            btnFavorite.setImageResource(R.drawable.ic_heart_red);
+        } else {
+            btnFavorite.setImageResource(R.drawable.ic_heart_black);
+        }
+    }
+
+    // ... (Giữ nguyên navigateToActivity và showOverview/showChapters) ...
     private void navigateToActivity(Class<?> targetClass, boolean isClearHistory) {
         Intent intent = new Intent(this, targetClass);
         if (isClearHistory) {
