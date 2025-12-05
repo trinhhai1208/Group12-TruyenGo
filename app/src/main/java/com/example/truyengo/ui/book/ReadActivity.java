@@ -39,7 +39,7 @@ public class ReadActivity extends AppCompatActivity {
     private ArrayList<AllChapters> allChaptersList;
     private int currentChapterIndex;
     private String bookName;
-    private String bookId;
+    private String slug;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -56,7 +56,7 @@ public class ReadActivity extends AppCompatActivity {
             allChaptersList = (ArrayList<AllChapters>) getIntent().getSerializableExtra("ALL_CHAPTERS");
             currentChapterIndex = getIntent().getIntExtra("CURRENT_INDEX", -1);
             bookName = getIntent().getStringExtra("BOOK_NAME");
-            bookId = getIntent().getStringExtra("BOOK_ID");
+            slug = getIntent().getStringExtra("SLUG");
 
             if (allChaptersList != null && currentChapterIndex != -1) {
                 loadChapter(currentChapterIndex);
@@ -121,8 +121,14 @@ public class ReadActivity extends AppCompatActivity {
         // Gọi API lấy dữ liệu chương bằng GetChapters
         fetchChapterData(currentChapter);
 
-        if (bookId != null) {
-            addToHistoryApi(bookId, Integer.parseInt(currentChapter.getChapter_name()));
+        if (slug != null) {
+            try {
+                int chapNum = Integer.parseInt(currentChapter.getChapter_name());
+                System.out.println("CHECK 2: " + chapNum);
+                addToHistoryApi(slug, chapNum);
+            } catch (NumberFormatException e) {
+                android.util.Log.e("ReadActivity", "Không thể lưu lịch sử cho chương: " + currentChapter.getChapter_name());
+            }
         }
     }
 
@@ -165,14 +171,14 @@ public class ReadActivity extends AppCompatActivity {
         });
     }
 
-    private void addToHistoryApi(String bookId, int chapterNumber) {
+    private void addToHistoryApi(String slug, int chapterNumber) {
         TokenManager tokenManager = new TokenManager(this);
         String token = tokenManager.getAccessToken();
         String userId = tokenManager.getUserId();
         if (token == null) return;
 
         // Lưu ý: Đảm bảo thread an toàn hoặc call trong background nếu cần thiết (Retrofit tự lo background)
-        ApiClient.getApiService().addToHistory("Bearer " + token, userId, bookId, chapterNumber).enqueue(new Callback<BaseResponse<String>>() {
+        ApiClient.getApiService().addToHistory("Bearer " + token, userId, slug, chapterNumber).enqueue(new Callback<BaseResponse<String>>() {
             @Override
             public void onResponse(Call<BaseResponse<String>> call, Response<BaseResponse<String>> response) {
                 // Log thành công

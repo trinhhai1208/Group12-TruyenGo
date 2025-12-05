@@ -1,5 +1,7 @@
 package com.example.truyengo.ui.main;
 
+import static com.example.truyengo.api.ApiGet.getApi;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,20 +18,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.example.truyengo.R;
+import com.example.truyengo.api.book.ApiOneBookResponse;
 import com.example.truyengo.commons.BookGridAdapter;
+import com.example.truyengo.data.GetAllBook;
 import com.example.truyengo.dto.response.BaseResponse;
+import com.example.truyengo.dto.response.HistoryAndFavoriteResponseDto;
 import com.example.truyengo.models.book.Book;
 import com.example.truyengo.ui.auth.LoginActivity;
 import com.example.truyengo.utils.ApiClient;
 import com.example.truyengo.utils.TokenManager;
+import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FavoriteFragment extends Fragment{
+public class FavoriteFragment extends Fragment {
     private RecyclerView rvFavorite;
     private BookGridAdapter favoriteAdapter; // Tái sử dụng Adapter của bạn
 
@@ -79,20 +86,46 @@ public class FavoriteFragment extends Fragment{
         String authHeader = "Bearer " + token;
 
         // 2. Gọi API getHistory
-        ApiClient.getApiService().getFavorites(authHeader, userId).enqueue(new Callback<BaseResponse<List<Book>>>() {
+        ApiClient.getApiService().getFavorites(authHeader, userId).enqueue(new Callback<BaseResponse<List<HistoryAndFavoriteResponseDto>>>() {
             @Override
-            public void onResponse(Call<BaseResponse<List<Book>>> call, Response<BaseResponse<List<Book>>> response) {
+            public void onResponse(Call<BaseResponse<List<HistoryAndFavoriteResponseDto>>> call, Response<BaseResponse<List<HistoryAndFavoriteResponseDto>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    BaseResponse<List<Book>> body = response.body();
+                    BaseResponse<List<HistoryAndFavoriteResponseDto>> body = response.body();
 
                     // Kiểm tra success và data có tồn tại không
                     if (body.isSuccess() && !body.getData().isEmpty()) {
-                        List<Book> books = body.getData();
+                        List<HistoryAndFavoriteResponseDto> bookSlugs = body.getData();
 
-                        // Cập nhật RecyclerView
-                        if (favoriteAdapter != null) {
-                            favoriteAdapter.setBooks(books);
-                        }
+                        // --- SỬA TẠI ĐÂY: Tạo Thread mới để xử lý lấy dữ liệu chi tiết ---
+                        new Thread(() -> {
+                            List<Book> books = new ArrayList<>();
+
+                            // 1. Chạy vòng lặp lấy dữ liệu (Chạy ngầm, không gây lag UI)
+                            for (HistoryAndFavoriteResponseDto h : bookSlugs) {
+                                // Gọi hàm getBooksTheoTen (Có chứa HttpURLConnection) ở đây là an toàn
+                                GetAllBook getAllBook = new GetAllBook();
+                                Book b = getAllBook.getBooksTheoTen(h.getSlug());
+
+                                // Kiểm tra nếu lấy được dữ liệu thì mới add
+                                if (b != null && b.getName() != null) {
+                                    books.add(b);
+                                }
+                            }
+
+                            // 2. Sau khi lấy xong hết, quay về Main Thread để hiển thị lên RecyclerView
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    if (favoriteAdapter != null) {
+                                        favoriteAdapter.setBooks(books);
+                                        // Ẩn loading nếu có
+                                    } else {
+                                        // Log cảnh báo nếu adapter chưa khởi tạo
+                                        android.util.Log.w("HistoryFragment", "Adapter is null");
+                                    }
+                                });
+                            }
+                        }).start();
+                        // ------------------------------------------------------------------
                     } else {
                         // Xử lý trường hợp không thành công hoặc list rỗng
                         Toast.makeText(getContext(), "Không có dữ liệu yêu thích", Toast.LENGTH_SHORT).show();
@@ -103,7 +136,7 @@ public class FavoriteFragment extends Fragment{
             }
 
             @Override
-            public void onFailure(Call<BaseResponse<List<Book>>> call, Throwable t) {
+            public void onFailure(Call<BaseResponse<List<HistoryAndFavoriteResponseDto>>> call, Throwable t) {
                 android.util.Log.e("FavoriteError", "Lỗi: " + t.getMessage());
                 Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }

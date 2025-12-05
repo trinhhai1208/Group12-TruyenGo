@@ -7,6 +7,7 @@ import com.example.truyengo.dto.request.auth.RegisterRequestDto;
 import com.example.truyengo.dto.request.auth.ResetPasswordRequestDto;
 import com.example.truyengo.dto.request.auth.VerifyOtpRequestDto;
 import com.example.truyengo.dto.response.BaseResponse;
+import com.example.truyengo.dto.response.HistoryAndFavoriteResponseDto;
 import com.example.truyengo.dto.response.LastReadHistoryResponseDto;
 import com.example.truyengo.dto.response.UserResponseDto;
 import com.example.truyengo.models.book.Book;
@@ -49,7 +50,7 @@ public interface AuthApiService {
     Call<BaseResponse<String>> addToHistory(
             @Header("Authorization") String token,
             @Query("userId") String userId,
-            @Query("bookId") String bookId,
+            @Query("slug") String slug,
             @Query("chapter") int chapter
     );
 
@@ -57,11 +58,11 @@ public interface AuthApiService {
     Call<BaseResponse<LastReadHistoryResponseDto>> getLastReadChapter(
             @Header("Authorization") String token,
             @Query("userId") String userId,
-            @Query("bookId") String bookId
+            @Query("slug") String slug
     );
 
     @GET("api/v1/user/history/{userId}")
-    Call<BaseResponse<List<Book>>> getHistory(
+    Call<BaseResponse<List<HistoryAndFavoriteResponseDto>>> getHistory(
             @Header("Authorization") String token,
             @Path("userId") String userId
     );
@@ -70,11 +71,11 @@ public interface AuthApiService {
     Call<BaseResponse<Boolean>> toggleFavorite(
             @Header("Authorization") String token,
             @Query("userId") String userId,
-            @Query("bookId") String bookId
+            @Query("slug") String slug
     );
 
     @GET("api/v1/user/favorite/{userId}")
-    Call<BaseResponse<List<Book>>> getFavorites(
+    Call<BaseResponse<List<HistoryAndFavoriteResponseDto >>> getFavorites(
             @Header("Authorization") String token,
             @Path("userId") String userId
     );
@@ -83,6 +84,6 @@ public interface AuthApiService {
     Call<BaseResponse<Boolean>> checkIsFavorite(
             @Header("Authorization") String token,
             @Query("userId") String userId,
-            @Query("bookId") String bookId
+            @Query("slug") String slug
     );
 }
