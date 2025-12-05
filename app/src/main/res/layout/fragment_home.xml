@@ -29,6 +29,7 @@
                 android:padding="16dp">
 
                 <ImageView
+                    android:id="@+id/ivAvatar"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/circle_bg"
@@ -54,7 +55,6 @@
                         android:id="@+id/tvUsername"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Viet Doanh"
                         android:textColor="#000"
                         android:textSize="18sp"
                         android:textStyle="bold" />

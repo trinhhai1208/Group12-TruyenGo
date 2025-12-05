@@ -13,14 +13,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.truyengo.R;
 import com.example.truyengo.commons.ReadAdapter;
 import com.example.truyengo.data.GetChapters; // Import GetChapters
+import com.example.truyengo.dto.response.BaseResponse;
 import com.example.truyengo.models.chapter.AllChapters;
 import com.example.truyengo.models.chapter.Chapter;
 import com.example.truyengo.models.chapter.ChapterImage;
+import com.example.truyengo.utils.ApiClient;
+import com.example.truyengo.utils.TokenManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ReadActivity extends AppCompatActivity {
 
@@ -32,6 +39,7 @@ public class ReadActivity extends AppCompatActivity {
     private ArrayList<AllChapters> allChaptersList;
     private int currentChapterIndex;
     private String bookName;
+    private String slug;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -48,6 +56,7 @@ public class ReadActivity extends AppCompatActivity {
             allChaptersList = (ArrayList<AllChapters>) getIntent().getSerializableExtra("ALL_CHAPTERS");
             currentChapterIndex = getIntent().getIntExtra("CURRENT_INDEX", -1);
             bookName = getIntent().getStringExtra("BOOK_NAME");
+            slug = getIntent().getStringExtra("SLUG");
 
             if (allChaptersList != null && currentChapterIndex != -1) {
                 loadChapter(currentChapterIndex);
@@ -111,6 +120,16 @@ public class ReadActivity extends AppCompatActivity {
 
         // Gọi API lấy dữ liệu chương bằng GetChapters
         fetchChapterData(currentChapter);
+
+        if (slug != null) {
+            try {
+                int chapNum = Integer.parseInt(currentChapter.getChapter_name());
+                System.out.println("CHECK 2: " + chapNum);
+                addToHistoryApi(slug, chapNum);
+            } catch (NumberFormatException e) {
+                android.util.Log.e("ReadActivity", "Không thể lưu lịch sử cho chương: " + currentChapter.getChapter_name());
+            }
+        }
     }
 
     // SỬ DỤNG GetChapters CỦA BẠN TẠI ĐÂY
@@ -148,6 +167,26 @@ public class ReadActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() -> Toast.makeText(ReadActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void addToHistoryApi(String slug, int chapterNumber) {
+        TokenManager tokenManager = new TokenManager(this);
+        String token = tokenManager.getAccessToken();
+        String userId = tokenManager.getUserId();
+        if (token == null) return;
+
+        // Lưu ý: Đảm bảo thread an toàn hoặc call trong background nếu cần thiết (Retrofit tự lo background)
+        ApiClient.getApiService().addToHistory("Bearer " + token, userId, slug, chapterNumber).enqueue(new Callback<BaseResponse<String>>() {
+            @Override
+            public void onResponse(Call<BaseResponse<String>> call, Response<BaseResponse<String>> response) {
+                // Log thành công
+                android.util.Log.d("HISTORY", "Saved chapter " + chapterNumber);
+            }
+            @Override
+            public void onFailure(Call<BaseResponse<String>> call, Throwable t) {
+                // Log lỗi
             }
         });
     }

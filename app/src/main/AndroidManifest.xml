@@ -66,6 +66,16 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.main.HistoryFragment"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.main.FavoriteFragment"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.auth.ResetPasswordActivity"
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:exported="false" />
